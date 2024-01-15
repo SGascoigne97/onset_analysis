@@ -1,8 +1,0 @@
-# ignore hidden files
-.*
-ehthumbs.db
-Thumbs.db
-# ignore temporary MATLAB and excel files
-*.m~
-# include git-files
-!.git*
