@@ -1,54 +1,9 @@
 # Incomplete resection of the icEEG seizure onset zone is not associated with post-surgical outcomes
 Gascoigne et al. (brief communication, submitted January 2024).
-The code in this repository can be used to automatically detect onsets using the imprint and Epileptigenicity Index (Bartolomei et al., 2008) algortihms
+This code performs downstream analysis, comparing proportion of onset resected, onset size, and resection size across outcome groups. 
+Within this folder **analysis_code.m** calls all other scripts and will produce tables and figures which were used in this paper.
 
-### Data formatting 
-For each subject, icEEG data and accompanying metadata are required. The table should have one row per seizure and include the following columns:
-  - *segment_id*: Unique identifier for the seizure
-  - *patient_id*: Subject identification number
-  - *duration*: Duration of seizure in seconds
-  - *onset_channels*: Binary array identifying clinically labelled onset channels (binary identifier with length n_chan)
-  - *resected_5mm*: Binary array identifying if the resection was within 5mm of the channel, therefore including the channel in the resected area (binary identifier with length n_chan)
-  - *segment_pre*: Number of seconds at the start of the recording that is considered pre-ictal (i.e., before the clinically labelled seizure onset time).
-  - *segment_post*: Number of seconds at the end of the recording that is considered post-ictal (i.e., after the clinically labelled seizure offset time).
-  - *segment_fs*: Sampling frequency of recording in Hertz (in this work, all seizures were sampled at 512Hz).
-  - *segment_channel_labels*: Channel names for each channel in the recording (this is used to localise channels to regions of interest (ROIs). An additional table per subject contains the mapping information form channels to ROIs. 
-  - *segment_data*: icEEG time series (matrix with dimension #channels x #secondsrecorded*sampling frequency).
-
-  The following columns are required for metadata comparisons:
-  - *ilae_sz_type*: Seizure type as reported by clinicians based on visual inspection of seizure or video recording of seizure.
-  - *loss_of_awareness*: Binary identifier showing which seizures led to a loss of awareness as tested by interactions with the subject during the seizure. NaN if interaction was not possible. 
-  - *baseline_awake*: Binary identifier showing if the subject was awake (1) or asleep (0) at seizure onset. NaN if this was unclear or subject was obscured in footage). 
-  - *op_type*: Operation type received by the subject (e.g., TLx is a temporal lesionectomy). This is used to split subjects into epilepsy types in metadata analyses. 
-
-Additional information that could be used in future analysis:
-  - *start*: Start time of seizure (date-time object)
-  - *ilae*: surgical outcome based on ILAE score for each year reported in *ilae_year*. This is used to extract the year one outcome for the individual. 
-  - *ilae_year*: year of outcome report which is used together with start times (from which the year of surgery can be extracted) to extract the year one outcome. 
-  - *resected_3mm*: Binary array identifying if the resection was within 3mm of the channel, therefore including the channel in the resected area (binary identifier with length n_chan) - This study used the 5mm alternative of this, but swithching to 3mm is possible with a simple adjustment on line 199 of **onset_detec_s_mahal.m** (replace *resected_5mm{1}* with *resected_3mm{1}*).
-
-  
-
-
- 
-
-### Onset localisation and channel to ROI conversion
-The **onset_detec_s_mahal.m** code creates a table (*subquestions/final_output.mat*) presenting all data required for downstream analyses:
-  - Subject ID
-  - Seizure IDs
-  - Channel labels
-  - Resection localisation (channel-wise, Lausanne-120, Lausanne-250)
-  - Clinically labelled onset (channel-wise, Lausanne-120, Lausanne-250)
-  - Automatically labelled onsets for each seizure (channel-wise, Lausanne-120, Lausanne-250) for each onset localisation algorithm
-  - One ALO created across seizure onsets (regions included in >=50% of onsets) (channel-wise, Lausanne-120, Lausanne-250) for each onset localisation algorithm
-  - ROI names (Lausanne-120, Lausanne-250) for visualisations
-  - Channels to ROI conversion matrices (Lausanne-120, Lausanne-250)
-  - Subject metadata (surgery outcome, surgery year, outcome year, operation type, seizure duration, seizure type, sex, age at epilepsy onset, outcome at year one (as is used as the outcome identifier in this work)). 
-
-### Downstream analysis
-All scripts for performing downstream analysis are included in the **subquestions** folder. Within this folder **final.m** calls all other scripts and will produce tables and figures which were used in this paper.
-
-In the main analysis, we looked at onsets based on the Lausanne-120 parcellation scheme, this code can be easily adapted to iterate over channel-wise, Lausanne-120, and Lausanne-250 parcellation schemes by uncommenting lines 40 and 86 (**CHECK THAT THIS IS STILL THE CASE**) 
+In the main analysis, we looked at onsets based on the Lausanne-120 parcellation scheme, this code can be easily adapted to produce results using channel-wise onsets or the Lausane-250 parcellation scheme. 
 
 #### Setting parameters for analysis
 - *parc*: The parcellation scheme of interest (can be set to "chan", "roi_120", or "roi_250"). You only need to set this parameter if you are not iterating through parcellation schemes (i.e., lines 40 and 86 remain commented out). The code is currently set to perform analysis using the Lausanne-120 parcellation scheme (Line 17: *parc = "roi_120";*)
@@ -60,7 +15,7 @@ In the main analysis, we looked at onsets based on the Lausanne-120 parcellation
 
 #### Saving figures
 The code saves figures for each step of the analysis, the user can determine if they want the figures to be saved (save_fig = 1) or not (save_fig = 0) on line 37. 
-The location where the figures are stored can be changed, as this code produces the visualisations used in *Figure Two*, we have set the save location accordingly (Line 34: *save_folder = '../figures/paper_figures/Figure 3/'*).
+The location where the figures are stored can be changed, as this code produces the visualisations used in *Figure Two*, we have set the save location accordingly (Line 34: *save_folder = '../figures/paper_figures/Figure 2/'*).
 Additionally, it is possible to change the filetype used for each of the figures (Line 37: *file_type = "svg";*), see MATLAB documentation to see the filetypes available). 
 
 #### Step-by-step downstream analysis
@@ -74,7 +29,8 @@ Here we compute the size of seizure onsets (both CLO and automatically captured)
 **larger_resection** 
 Here we will compute the size of resections using both count of regions and volume (if using ROIS, based on controls) and compare across surgical outcome groups. Again, analyses based on volumes were omitted from this work but the code has been provided and figures will be produced. 
  
-
 #### Figures
-*Figure One* Panels B-F display the process from icEEG to automatically detected (consensus) onset using Lausanne-120 parcellation scheme. Panel G shows the clinically labelled onset, also using the Lausanne-120 parcellation scheme. Panels B-G can be reproduced by running **figure_1.m**
-*Figure Two* is based on the figures generated when running **subquestions/final.m**
+*Figure Two* is based on the figures generated when running **analysis_code.m**. The panels used in Figure 2 are saved in the following locations:
+- A: *figures/paper_figures/Figure 2/onset_resected/roi_120_Perc_violin.svg*
+- B: *figures/paper_figures/Figure 2/onset_size/roi_120_violin_count.svg*
+- C: *figures/paper_figures/Figure 2/resection_size/roi_120_violins.svg*
