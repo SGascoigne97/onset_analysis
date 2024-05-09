@@ -98,6 +98,10 @@ auc_tabs.(sprintf(chan_or_roi)).resection_size  = outcome_auc(resec_size_tab,com
     resec_size_tab.Outcome == out_grps(2), "n_perm",n_perm,"plot_fig",1,"save_fig",save_fig,...
     "save_loc",save_loc, "file_type", "svg", "main_title", "AUCs comparing outcome groups based on resection size");
 
+%% Logistic regression model
+% OUtcome_group ~ proportion resected + size of resection
+
+
 %% Group medians to report in paper
 comps =  string(resec_size_tab.Properties.VariableNames);
 med_tab = table(comps(3:end)', nan(length(comps)-2,1), nan(length(comps)-2,1),...

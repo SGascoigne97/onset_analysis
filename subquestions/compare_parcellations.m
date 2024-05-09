@@ -24,6 +24,8 @@ for chan_or_roi = ["chan", "roi_120", "roi_250"]
     end
 end
 
+save_loc = "figures/paper_figures/supplementary";
+
 %% Compare results across parcellation schemes
 
 for comp = ["clo_concord", "onset_resec", "onset_size", "resection_size"]
@@ -133,7 +135,7 @@ end
 comp_parc_tab.onset_size = array2table(nan(0,7), 'VariableNames', ["Scheme_1", "Scheme_2", "comp", "det", "rho", "DoF", "p"]);
 
 % Is onset resected (Section 3.2)
-for det = "imprint" %det_meths
+for det = det_meths
     resec_tab = table(repelem(parcs(1:length(parcs)-1), 1, length(parcs)*2)', ...
     repelem(repmat(parcs, 1, (length(parcs)-1)),1,2)', repmat(["count", "vol"], 1, (length(parcs)-1)*length(parcs))',...
     repmat(det, 2*(length(parcs)-1)*length(parcs), 1 ),...
@@ -181,7 +183,7 @@ for det = "imprint" %det_meths
                     [r, p] = corr(grp_1_vals, grp_2_vals, "type","Spearman");
 
                     title(sprintf("Spearman's rank \n r(%d) = %.3f, p = %.3f", length(grp_1_vals)-2, r, p))
-                    saveas(f, sprintf('../figures/paper_figures/Supplementary/onset_size_%s_%s(%s_v_%s).svg', det, comp, parcs(parc1), parcs(parc2)))
+                    saveas(f, sprintf('%s/onset_size_%s_%s(%s_v_%s).svg', save_loc, det, comp, parcs(parc1), parcs(parc2)))
 
                     % Store test statistic, degrees of freedom, and
                     % p-values in table
@@ -244,7 +246,7 @@ for parc1 = 1:length(parcs)
                 [r, p] = corr(grp_1_vals, grp_2_vals, "type","Spearman");
 
                 title(sprintf("Spearman's rank \n r(%d) = %.3f, p = %.3f", length(grp_1_vals)-2, r, p))
-                saveas(f, sprintf('../figures/paper_figures/Supplementary/resection_%s(%s_v_%s).svg', comp, parcs(parc1), parcs(parc2)))
+                saveas(f, sprintf('%s/resection_%s(%s_v_%s).svg', save_loc, comp, parcs(parc1), parcs(parc2)))
 
                 % Store test statistic, degrees of freedom, and
                 % p-values in table
@@ -352,7 +354,7 @@ for comp = comps
 
 end
 sgtitle("AUCs across parcellations and onset detection methods")
-saveas(f, "../figures/paper_figures/Supplementary/comparing_parcellations_auc.svg")
+saveas(f, sprintf("%s/comparing_parcellations_auc.svg", save_loc))
 
 % Plot p-values
 f = figure();
@@ -375,4 +377,4 @@ for comp = comps
 
 end
 sgtitle("p-values across parcellations and onset detection methods")
-saveas(f, "../figures/paper_figures/Supplementary/comparing_parcellations_p.svg")
+saveas(f, sprintf("%s/comparing_parcellations_p.svg", save_loc))
