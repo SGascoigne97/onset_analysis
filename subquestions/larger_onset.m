@@ -44,6 +44,10 @@ for subj = 1:size(final_output)
     end
 end
 
+onset_size_tab.impl_size =...
+     cellfun(@length, final_output.(sprintf("imprint_%s", parc)));
+
+
 onset_parc_tab.(sprintf(chan_or_roi)) = onset_size_tab;
 
 %% VISUALISATIONS

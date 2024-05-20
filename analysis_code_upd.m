@@ -12,36 +12,31 @@ load('roi_info/ATLAS.mat')
 final_output = final_output(final_output.outcome ~= 8,:); % ILAE 8 is used 
 % to encode unknown outcome - remove such subjects BEFORE completing downstram analysis
 
+n_perm = 1000; % All AUC p-values are computed based on permutation test 
+               % with 1000 permutations
+out_thresh = 2;%2; % ILAE 1-2 is considered as a 'favourable' outcome whilst 
+                % ILAE 3+ is considered as an 'unfavourable' outcome
+consensus_thresh = 0.5; % Set threshold for inclusion of regions in 
+                        % consensus onset, here we will include regions 
+                        % present in at least half of the subject's seizures
+most_resec_thresh = 0.5; % Set threshold above which subjects are considered 
+                         % as having 'most' of their onset resected
+
+det_meths = ["clo", "imprint", "EI"]; % List onset detection methods you 
+                                      % are interested in analysing
+                                      
+
+% Set parameters for saving figures
+% save_folder = 'figures/paper_figures/Figure 2/'; 
+save_fig = 1; % Each figure that is created will be saved 
+save_folder = 'figures/paper_figures/new_results/'; % Location where subfolders will
+                                          % be created to store figures and tables
+
+file_type = "svg"; % Figures will be saved as svgs so they can be pulled 
+                   % into illustrator for paper figures
+
 %% Set parameters for analyses
-for parc = "roi_120" % ["chan", "roi_120", "roi_250"]
-    %parc = "roi_120"; % All analyses are based on Lausanne 120 atlas
-                      % This can be set as "chan", "roi_120", or "roi_250"
-    
-    n_perm = 1000; % All AUC p-values are computed based on permutation test 
-                   % with 1000 permutations
-    out_thresh = 2;%2; % ILAE 1-2 is considered as a 'favourable' outcome whilst 
-                    % ILAE 3+ is considered as an 'unfavourable' outcome
-    consensus_thresh = 0.5; % Set threshold for inclusion of regions in 
-                            % consensus onset, here we will include regions 
-                            % present in at least half of the subject's seizures
-    most_resec_thresh = 0.5; % Set threshold above which subjects are considered 
-                             % as having 'most' of their onset resected
-    
-    det_meths = ["clo", "imprint", "EI"]; % List onset detection methods you 
-                                          % are interested in analysing
-                                          
-    
-    % Set parameters for saving figures
-    % save_fig = 0; % Each figure that is created will be saved 
-    % save_folder = 'figures/paper_figures/Figure 2/'; % Location where subfolders will
-    %                                           % be created to store figures and tables
-    save_fig = 1; % Each figure that is created will be saved 
-    save_folder = 'figures/paper_figures/new_results/'; % Location where subfolders will
-                                              % be created to store figures and tables
-    
-    file_type = "svg"; % Figures will be saved as svgs so they can be pulled 
-                       % into illustrator for paper figures
-    
+for parc = ["chan", "roi_120", "roi_250"]    
     [chan_or_roi, n_perm, out_thresh, consensus_thresh, most_resec_thresh,...
         det_meths, save_fig, save_folder, file_type, out_grps] =...
         argument_validation(final_output, parc, n_perm, out_thresh, consensus_thresh,...
@@ -64,7 +59,6 @@ for parc = "roi_120" % ["chan", "roi_120", "roi_250"]
     %% Add outcome category column to final_output table
     % Outcome category (binary based on selected outcome threshold)
     final_output.outcome_cat = categorical(final_output.outcome>out_thresh,[0,1], out_grps);
-    
     %% 3.1 icEEG Seizure onset regions tend to be resected, but more complete 
     % resections are not associated with more favourable surgical
     %outcomes
@@ -80,13 +74,7 @@ for parc = "roi_120" % ["chan", "roi_120", "roi_250"]
     % automatically captured) using both count of regions and volume (based on
     % controls) and compare across surgical outcome groups
     
-    larger_onset
-    
-    % Here we will compute the size of resections using both count of regions
-    % and volume (if using ROIS, based on controls) and compare across surgical
-    % outcome groups
-    
-    larger_resection
+    ons_resec_as_prop
         
     %% SUPPLEMENTARY
     %% S2 Subject Metadata
@@ -111,5 +99,7 @@ for parc = "roi_120" % ["chan", "roi_120", "roi_250"]
     
     % auc_clo_comp: table of AUCs and associated p-values for distinguishing
     % surgical outcome groups based on concordance 
+
+    close all
 end
 

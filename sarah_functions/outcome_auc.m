@@ -49,9 +49,9 @@ function [auc_tab] = outcome_auc(data_tbl, comp_measures, outcome, opts)
 
     for comp = comp_measures
         expl = data_tbl.(sprintf(comp));
-        expl = expl(~isnan(expl));
         outcome_clean = outcome(~isnan(expl));
-        mod = fitglm(expl, outcome_clean,...
+        expl_clean = expl(~isnan(expl));
+        mod = fitglm(expl_clean, outcome_clean,...
         'Distribution','binomial','Link','logit');
     
         probs = mod.Fitted.Probability;
@@ -64,7 +64,7 @@ function [auc_tab] = outcome_auc(data_tbl, comp_measures, outcome, opts)
         perm_auc = nan(n_perm,1);
         for perm = 1:n_perm
             rng(perm) % set seed to ensure reproducible permutations and results
-            expl_perm = expl(randperm(length(expl)));
+            expl_perm = expl_clean(randperm(length(expl_clean)));
             mod_perm = fitglm(expl_perm, outcome_clean,...
                 'Distribution','binomial','Link','logit');
             probs_perm = mod_perm.Fitted.Probability;
