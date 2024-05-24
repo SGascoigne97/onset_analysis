@@ -28,54 +28,60 @@ for det = det_meths
 end
 
 
-%% Chi-square test between outcome groups and whether subject had 'most' 
+%% Chi-square test between outcome groups and whether subject had 'most' or all
 % of onset resected
 tab_fill = nan(length(comp_measures)*length(det_meths),1);
 onset_resec_chi2 = table(repelem(det_meths,length(comp_measures))',...
     repmat(comp_measures,1,length(det_meths))',tab_fill,tab_fill,...
     tab_fill,tab_fill, 'VariableNames', ["det_meth", "comp", "chi2", "df", "n", "p"]);
 
-for det = det_meths    
-    comp_tab = comp_with_resec.(sprintf("%s", chan_or_roi)).(sprintf("%s", det));
-    out = comp_tab.Outcome;
-    for comp_meas = comp_measures
-        data = comp_tab.(sprintf(comp_meas));
-        comp_tab.most_resec = categorical(data>=most_resec_thresh, [0,1], ["No", "Yes"]);
-
-        [cont_tab,chi2,p,cats] = crosstab(comp_tab.most_resec, comp_tab.Outcome);
-        df = (size(cats,1)-1)*(size(cats,2)-1);
-        fig = figure();
-        heatmap(comp_tab, "most_resec", "Outcome")
-        colorbar off
-        
-        % We will use a chi^2 test if all values are greater than 5,
-        % otherwise we will use Fisher's exact test
-        if any(any(cont_tab <5))
-            [~, p, ~] = fishertest(cont_tab);
-            title(strrep(sprintf("%s %s \n Fisher's exact test p = %.2f",...
-                det, comp_meas,p), "_", " "))
-            % Save in outcome table
-            onset_resec_chi2(onset_resec_chi2.comp == comp_meas &...
-                        onset_resec_chi2.det_meth == det,3:end) = ...
-                        table(NaN, NaN, size(comp_tab,1),p);
-
-        else 
-            title(strrep(sprintf("%s %s \nchi^2(%d,%d) = %.2f, p = %.2f",...
-                det, comp_meas, df, size(comp_tab,1), chi2,p), "_", " "))
-            % Save in outcome table
-            onset_resec_chi2(onset_resec_chi2.comp == comp_meas &...
-                        onset_resec_chi2.det_meth == det,3:end) = ...
-                        table(chi2, df, size(comp_tab,1),p);
+for amount_resec = ["most", "all"]
+    for det = det_meths    
+        comp_tab = comp_with_resec.(sprintf("%s", chan_or_roi)).(sprintf("%s", det));
+        out = comp_tab.Outcome;
+        for comp_meas = comp_measures
+            data = comp_tab.(sprintf(comp_meas));
+            if amount_resec == "most"
+                comp_tab.most_resec = categorical(data>=most_resec_thresh, [0,1], ["No", "Yes"]);
+            else
+                comp_tab.most_resec = categorical(data==1, [0,1], ["No", "Yes"]);
+            end
+    
+            [cont_tab,chi2,p,cats] = crosstab(comp_tab.most_resec, comp_tab.Outcome);
+            df = (size(cats,1)-1)*(size(cats,2)-1);
+            fig = figure();
+            heatmap(comp_tab, "most_resec", "Outcome")
+            colorbar off
+            
+            % We will use a chi^2 test if all values are greater than 5,
+            % otherwise we will use Fisher's exact test
+            if any(any(cont_tab <5))
+                [~, p, ~] = fishertest(cont_tab);
+                title(strrep(sprintf("%s %s (%s) \n Fisher's exact test p = %.2f",...
+                    det, comp_meas,amount_resec,p), "_", " "))
+                % Save in outcome table
+                onset_resec_chi2(onset_resec_chi2.comp == comp_meas &...
+                            onset_resec_chi2.det_meth == det,3:end) = ...
+                            table(NaN, NaN, size(comp_tab,1),p);
+    
+            else 
+                title(strrep(sprintf("%s %s (%s)\nchi^2(%d,%d) = %.2f, p = %.2f",...
+                    det, comp_meas, amount_resec, df, size(comp_tab,1), chi2,p), "_", " "))
+                % Save in outcome table
+                onset_resec_chi2(onset_resec_chi2.comp == comp_meas &...
+                            onset_resec_chi2.det_meth == det,3:end) = ...
+                            table(chi2, df, size(comp_tab,1),p);
+            end
+           
+            if save_fig == 1
+                saveas(fig,sprintf("%s%s_%s_chi2_%s.%s", save_loc, det, comp_meas, amount_resec, file_type))
+            end
+            clear fig
         end
-       
-        if save_fig == 1
-            saveas(fig,sprintf("%s%s_%s_chi2.%s", save_loc, det, comp_meas, file_type))
-        end
-        clear fig
     end
+    
+    chi2_tab.(sprintf(chan_or_roi)).(sprintf("%s_resec", amount_resec)) = onset_resec_chi2;
 end
-
-chi2_tab.(sprintf(chan_or_roi)).most_resec = onset_resec_chi2;
 %% VISUALISATIONS
 % Violin plots comparing outcome groups
 for comp_ind = 1:length(comp_measures)
@@ -94,25 +100,6 @@ for comp_ind = 1:length(comp_measures)
         end
     end
 end
-
-% fig = figure();
-% fig.Position = [500,500,800*length(det_meths),500*length(comp_measures)];
-% for det_ind = 1:length(det_meths)
-%     for comp_ind = 1:length(comp_measures)
-%         comp_tab = comp_with_resec.(sprintf(chan_or_roi)).(sprintf(det_meths(det_ind)));
-%         subplot(2,3,((comp_ind-1)*3)+det_ind)
-%         half_violin(comp_tab, comp_measures(comp_ind), comp_tab.Outcome,...
-%             "new_fig",0, "grp_names", out_grps, "y_lim", [0,1.2], "save_fig", 0)
-%         title(strrep(sprintf("%s %s (n=%d)", det_meths(det_ind), ...
-%             comp_measures(comp_ind), size(comp_tab,1)), "_"," "))
-%         clear comp_tab
-%     end
-% end
-% 
-% if save_fig == 1
-%     saveas(fig, sprintf("%sviolin.svg", save_loc))
-% end
-% clear fig
 
 %% Compute AUC and p-values comparing outcome groups
 for det = ["clo", "imprint", "EI"]

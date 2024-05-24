@@ -55,6 +55,10 @@ end
 
 onset_parc_tab.(sprintf(chan_or_roi)) = onset_size_tab;
 
+%% Determine if a complete resection is associated with better outcomes
+[a,b,c,d] = crosstab(comp_with_resec.roi_120.clo.Perc ==1, comp_with_resec.roi_120.clo.Outcome) % NEED TO MAKE THIS CODE NEATER
+[a,b,c,d] = crosstab(comp_with_resec.roi_120.imprint.Perc ==1, comp_with_resec.roi_120.imprint.Outcome)
+
 %% VISUALISATIONS
 % Creating half-violin plots comparing onset sizes between outcome groups
 comp_vars = string(onset_size_tab.Properties.VariableNames);
@@ -116,6 +120,8 @@ for comp = comps(3:end)
 end
 
 median_tabs.(sprintf(chan_or_roi)).onset_size = med_tab;
+
+
 %%
 % %% Now looking at resection size
 % % Is a larger resection (i.e., more regions resected) associated with better
