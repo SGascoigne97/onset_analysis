@@ -32,8 +32,11 @@ det_meths = ["clo", "imprint", "EI"]; % List onset detection methods you
 % save_folder = 'figures/paper_figures/Figure 2/'; % Location where subfolders will
 %                                           % be created to store figures and tables
 save_fig = 1; % Each figure that is created will be saved 
-save_folder = 'figures/paper_figures/new_results/'; % Location where subfolders will
+save_folder = 'figures/paper_figures/Figure 2/'; % Location where subfolders will
                                           % be created to store figures and tables
+if ~exist(save_folder, 'dir')
+    mkdir(save_folder)
+end
 
 file_type = "svg"; % Figures will be saved as svgs so they can be pulled 
                    % into illustrator for paper figures
