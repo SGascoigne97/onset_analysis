@@ -1,7 +1,7 @@
 # Incomplete resection of the icEEG seizure onset zone is not associated with post-surgical outcomes
 Gascoigne et al. (brief communication, submitted January 2024).
 This code performs downstream analysis, comparing proportion of onset resected, onset size, and resection size across outcome groups. 
-Within this folder **analysis_code.m** calls all other scripts and will produce tables and figures which were used in this paper.
+Within this folder **run_all_analyses.m** calls all other scripts and will produce tables and figures which were used in this paper.
 
 In the main analysis, we looked at onsets based on the Lausanne-120 parcellation scheme, this code can be easily adapted to produce results using channel-wise onsets or the Lausane-250 parcellation scheme. 
 
@@ -23,14 +23,11 @@ Additionally, it is possible to change the filetype used for each of the figures
 **is_onset_resected** The proportion of the seizure onset zone (CLO and IOLA) that was subsequently resected was computed and compared across outcome groups.  We elected to omit the volume calculations from this work as the volume of regions may not accurately represent the true volume of the onsets and resections, the code has been left in this repository for completeness. Output figures will include comparisons using both the number of regions and the estimated volume of onsets.
 
 ##### 3.2 Larger onsets and resections are not associated with surgical outcomes
-**larger_onset** 
-Here we compute the size of seizure onsets (both CLO and automatically captured) using both count of regions and volume (based on controls) and compare across surgical outcome groups. We elected to omit the volume calculations from this work as the volume of regions may not accurately represent the true volume of the onsets and resections, the code has been left in this repository for completeness. Output figures will include comparisons using both the number of regions and the estimated volume of onsets.
-
-**larger_resection** 
-Here we will compute the size of resections using both count of regions and volume (if using ROIS, based on controls) and compare across surgical outcome groups. Again, analyses based on volumes were omitted from this work but the code has been provided and figures will be produced. 
+**ons_resec_as_prop** 
+Here we compute the size of seizure onsets (both CLO and automatically captured) using count of regions and proportion of implantation and compare across surgical outcome groups. We elected to omit volume calculations (estimated based on Lausanne-120 regions in controls) from this work as the volume of regions may not accurately represent the true volume of the onsets and resections, the code has been left in this repository for completeness. Output figures will include comparisons using the number of regions, proportion of implantation in onset, and the estimated volume of onsets.
  
 #### Figures
 *Figure Two* is based on the figures generated when running **analysis_code.m**. The panels used in Figure 2 are saved in the following locations:
 - A: *figures/paper_figures/Figure 2/onset_resected/roi_120_Perc_violin.svg*
 - B: *figures/paper_figures/Figure 2/onset_size/roi_120_violin_count.svg*
-- C: *figures/paper_figures/Figure 2/resection_size/roi_120_violins.svg*
+- C: *figures/paper_figures/Figure 2/onset_size/roi_120_violin_prop.svg*
