@@ -33,3 +33,5 @@ Here we compute the size of seizure onsets (both CLO and ALO) as a count of regi
 - A: *figures/paper_figures/Figure 2/onset_resected/roi_120_Perc_violin.svg*
 - B: *figures/paper_figures/Figure 2/onset_size/roi_120_violin_count.svg*
 - C: *figures/paper_figures/Figure 2/resection_size/roi_120_violins.svg*
+
+
